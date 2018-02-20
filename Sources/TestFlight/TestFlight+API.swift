@@ -6,7 +6,7 @@ enum TestFlightAPI {
 
 }
 
-extension TestFlightAPI: ShuttleTargetType {
+extension TestFlightAPI: SugarTargetType {
     var route: Route {
         fatalError("Not implemented")
     }

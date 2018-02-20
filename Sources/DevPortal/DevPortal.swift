@@ -1,18 +1,8 @@
 import Core
 
-public struct DevPortal {
-    private static var _client: DevPortalClient?
-    static var client: DevPortalClient! {
-        get {
-            guard let client = _client else {
-                fatalError("Please login using `Spaceship.DevPortal.login(username: \"user\", \"password\")`")
-            }
-            return client
-        }
-        set {
-            _client = newValue
-        }
-    }
+public struct DevPortal: Base {
+    public static var _client: DevPortalClient?
+    public static var client: DevPortalClient!
 
     // MARK: - Login
 

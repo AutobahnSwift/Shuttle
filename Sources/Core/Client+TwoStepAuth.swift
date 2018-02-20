@@ -31,14 +31,14 @@ extension Client {
         Client.sessionId = appleIdSessionId
         Client.scnt = scnt
 
-        let res = try! appleAuthProvider.synchronousRequest(.twoStepAuth)
+        let res = try! appleAuthProvider.requestSync(.twoStepAuth)
 
 //        guard res.statusCode == 200 else {
 //            fatalError("Failed to get two factor code info: \(res.response)")
 //        }
 
-        if let twoStepResponse = try? res.map(TwoStepAuthResponse.self) {
-
+        if let _ = try? res.map(TwoStepAuthResponse.self) {
+            // TODO: Handle two step
         } else if let twoFactorResponse = try? res.map(TwoFactorAuthResponse.self) {
             handleTwoFactor(response: twoFactorResponse)
         } else {
@@ -69,7 +69,7 @@ extension Client {
 
         // Send securityCode back to server to get a valid session
         do {
-            _ = try appleAuthProvider.synchronousRequest(.securityCode(code))
+            _ = try appleAuthProvider.requestSync(.securityCode(code))
 
             // we use `TunesClient.handleITCResponse`
             // since this might be from the Dev Portal, but for 2 step
@@ -114,7 +114,7 @@ extension Client {
         // - DES5c148586dfd451e55afb0175f62418f91
         // We actually only care about the DES value
 
-        _ = try? appleAuthProvider.synchronousRequest(.trust)
+        _ = try? appleAuthProvider.requestSync(.trust)
 
         // This request will fail if the user isn't added to a team on iTC
         // However we don't really care, this request will still return the

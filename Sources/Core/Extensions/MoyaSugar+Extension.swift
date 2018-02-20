@@ -2,13 +2,14 @@ import Foundation
 import Moya
 import MoyaSugar
 
-public extension SugarTargetType {
-    var sampleData: Data {
+extension SugarTargetType {
+    public var sampleData: Data {
         return Data()
     }
 }
 
 public protocol ShuttleTargetType: SugarTargetType {
+    associatedtype ResultType: Decodable
     var decodeKeyPath: String? { get }
 }
 

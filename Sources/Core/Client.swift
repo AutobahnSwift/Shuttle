@@ -44,13 +44,29 @@ public protocol AuthenticatedClient {
     func sendLoginRequest(email: String, password: String)
 }
 
-open class Client {
-//    associatedtype ClientProvider: ShuttleTargetType
-//    let clientProvider: MoyaProvider<ClientProvider>
-    let olympusProvider = MoyaProvider<OlympusAPI>()
-    let appleAuthProvider = MoyaProvider<AppleAuthAPI>()
-    let tunesCoreProvider = MoyaProvider<TunesCoreAPI>()
+private func JSONResponseDataFormatter(_ data: Data) -> Data {
+    do {
+        let dataAsJSON = try JSONSerialization.jsonObject(with: data)
+        let prettyData =  try JSONSerialization.data(withJSONObject: dataAsJSON, options: .prettyPrinted)
+        return prettyData
+    } catch {
+        return data // fallback to original data if it can't be serialized.
+    }
+}
 
+open class Client {
+    let plugins: [PluginType] = [
+        NetworkLoggerPlugin(verbose: true, responseDataFormatter: JSONResponseDataFormatter),
+        RequestCSRFPlugin()
+    ]
+    open lazy var provider = MoyaProvider<MultiTarget>(plugins: plugins)
+    lazy var olympusProvider = MoyaProvider<OlympusAPI>()
+    lazy var appleAuthProvider = MoyaProvider<AppleAuthAPI>()
+    lazy var tunesCoreProvider = MoyaProvider<TunesCoreAPI>()
+
+    open class var hostname: URL {
+        fatalError("You must implement self.hostname")
+    }
     public static let protocolVersion: String = "QH65B2"
     public static let userAgent: String = "Shuttle 1.0"
     static var sessionId: String? = nil
@@ -62,7 +78,7 @@ open class Client {
     }
 //    var csrfTokens: [String] { get set }
 
-    open lazy var userDetails = try! tunesCoreProvider.synchronousRequest(.userDetails, returning: UserDetailsData.self)
+    open lazy var userDetails = try! tunesCoreProvider.requestSync(.userDetails).map(UserDetailsData.self)
     open lazy var teams: [Team] = userDetails.associatedAccounts.map { Team(name: $0.contentProvider.name, teamId: String($0.contentProvider.contentProviderId)) }
 
     public var currentTeamId: String? = nil
@@ -111,13 +127,9 @@ open class Client {
 
 //    static func clientWithAuth(from client: Client) -> Self
 
-    public init(cookie: String? = nil, teamId: String? = nil) {
+    public required init(cookie: String? = nil, teamId: String? = nil) {
         self.currentTeamId = teamId
     }
-
-    // Returns preferred path for storing cookie
-    // for two step verification.
-//    let persistentCookieURL: URL = URL()
 
     // MARK: - Paging
 
@@ -132,16 +144,8 @@ open class Client {
 
     // MARK: - Login and Team Selection
 
-    open class func login(email: String, password: String) {
-
-    }
-
-    open func sendLoginRequest(email: String, password: String) {
-        fatalError("Needs to be overidden")
-    }
-
     public func sendSharedLoginRequest(email: String, password: String) {
-        let response = try! appleAuthProvider.synchronousRequest(.signIn(email: email, password: password, cookie: nil))
+        let response = try! appleAuthProvider.requestSync(.signIn(email: email, password: password, cookie: nil))
 //        print("Auth Response: \(String(data: response.data, encoding: .utf8)!)")
         switch response.statusCode {
         case 403:
@@ -162,14 +166,14 @@ open class Client {
     }
 
     func fetchOlympusSession() {
-        _ = try! olympusProvider.synchronousRequest(.session, returning: OlympusSessionResponse.self)
+        _ = try! olympusProvider.requestSync(.session).map(OlympusSessionResponse.self)
         // TODO: Track providers
 //        teams = sessionResponse.availableProviders
 //        print(sessionResponse)
     }
 
     static var itcServiceKey = {
-        return try! MoyaProvider<OlympusAPI>().synchronousRequest(.itcServiceKey, returning: AuthService.self).authServiceKey
+        return try! MoyaProvider<OlympusAPI>().requestSync(.itcServiceKey).map(AuthService.self).authServiceKey
     }()
 
     var cookie: String? = nil

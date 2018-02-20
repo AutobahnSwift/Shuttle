@@ -1,10 +1,18 @@
+import Foundation
 import Core
 import Moya
 
-final class DevPortalClient: Core.Client {
-    let clientProvider = MoyaProvider<DevPortalAPI>()
-    override lazy var teams: [Team] = try! clientProvider.synchronousRequest(.teams, returning: [Team].self)
-    override var teamId: String {
+public final class DevPortalClient: Core.Client {
+    public override class var hostname: URL {
+        return URL(string: "https://developer.apple.com/services-account/\(protocolVersion)/")!
+    }
+    public static let headers: [String: String] = [
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": userAgent,
+    ]
+    public override lazy var teams: [Team] = try! provider.requestSync(MultiTarget(DevPortalAPI.teams)).map([Team].self, atKeyPath: "teams")
+    public override var teamId: String {
         get {
             if let currentId = currentTeamId {
                 return currentId
@@ -29,34 +37,9 @@ final class DevPortalClient: Core.Client {
         }
     }
 
-//    override required init(cookie: String? = nil, teamId: String? = nil) {
-//        super.init(cookie: cookie, teamId: teamId)
-//    }
-
     public class func login(email: String, password: String) -> DevPortalClient {
         let client = DevPortalClient()
-        client.sendLoginRequest(email: email, password: password)
+        client.sendSharedLoginRequest(email: email, password: password)
         return client
-    }
-
-    override func sendLoginRequest(email: String, password: String) {
-        sendSharedLoginRequest(email: email, password: password)
-    }
-
-    func apps(platform: Platform) throws -> [App] {
-        return try clientProvider.synchronousRequest(.apps(platform, teamId: teamId), returning: [App].self)
-    }
-
-    func createApp(type: BundleIdType, name: String, bundleId: String, platform: Platform, enableServices: [AppService]) throws -> App {
-        let params = CreateAppParams(type: type, name: name, teamId: teamId, bundleId: bundleId, enableServices: enableServices)
-        return try clientProvider.synchronousRequest(.createApp(platform, params: params), returning: App.self)
-    }
-
-    func deleteApp(appId: String, platform: Platform) throws {
-
-    }
-
-    func updateAppName(appId: String, name: String, platform: Platform) throws -> App? {
-        return nil
     }
 }

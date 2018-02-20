@@ -7,7 +7,7 @@ public enum TunesCoreAPI {
     case setTeamId(String, dsId: String)
 }
 
-extension TunesCoreAPI: ShuttleTargetType {
+extension TunesCoreAPI: SugarTargetType {
     public var baseURL: URL {
         return URL(string: "https://itunesconnect.apple.com/WebObjects/iTunesConnect.woa")!
     }

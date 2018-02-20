@@ -10,7 +10,7 @@ public enum AppleAuthAPI {
     case trust
 }
 
-extension AppleAuthAPI: ShuttleTargetType {
+extension AppleAuthAPI: SugarTargetType {
     public var baseURL: URL {
         return URL(string: "https://idmsa.apple.com/appleauth/auth")!
     }

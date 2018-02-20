@@ -2,20 +2,38 @@ import Foundation
 import Moya
 import Result
 
-public extension MoyaProvider where Target: ShuttleTargetType {
+public extension MoyaProvider where Target == MultiTarget {
     @discardableResult
-    public func synchronousRequest<T: Decodable>(_ target: Target, returning: T.Type) throws -> T {
+    public func requestSyncDecodedValue<T: ShuttleTargetType>(_ target: T) throws -> T.ResultType {
         do {
-            let response = try synchronousRequest(target).map(returning, atKeyPath: target.decodeKeyPath)
+            let response = try requestSync(MultiTarget(target)).map(T.ResultType.self, atKeyPath: target.decodeKeyPath)
             return response
         } catch MoyaError.jsonMapping(let response) {
-            print("Failed to decode `\(String(describing: T.self))` at keyPath `\(target.decodeKeyPath ?? "")` from response: \n\(String(data: response.data, encoding: .utf8)!)")
+            print("Failed to decode `\(String(describing: T.ResultType.self))` at keyPath `\(target.decodeKeyPath ?? "")` from response: \n\(String(data: response.data, encoding: .utf8)!)")
             throw MoyaError.jsonMapping(response)
         }
     }
 
     @discardableResult
-    public func synchronousRequest(_ target: Target) throws -> Moya.Response {
+    public func requestSyncDecodedArray<T: ShuttleTargetType>(_ target: T) throws -> [T.ResultType] {
+        do {
+            let response = try requestSync(MultiTarget(target)).map([T.ResultType].self, atKeyPath: target.decodeKeyPath)
+            return response
+        } catch MoyaError.jsonMapping(let response) {
+            print("Failed to decode `\(String(describing: T.ResultType.self))` at keyPath `\(target.decodeKeyPath ?? "")` from response: \n\(String(data: response.data, encoding: .utf8)!)")
+            throw MoyaError.jsonMapping(response)
+        }
+    }
+
+    @discardableResult
+    public func requestSync<T: ShuttleTargetType>(_ target: T) throws -> Moya.Response {
+        return try requestSync(MultiTarget(target))
+    }
+}
+
+extension MoyaProvider {
+    @discardableResult
+    public func requestSync(_ target: Target) throws -> Moya.Response {
         let semaphore = DispatchSemaphore(value: 0)
         var response: Moya.Response? = nil
         var error: Error? = nil

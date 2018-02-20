@@ -7,7 +7,7 @@ public enum OlympusAPI {
     case session
 }
 
-extension OlympusAPI: ShuttleTargetType {
+extension OlympusAPI: SugarTargetType {
     public var baseURL: URL {
         return URL(string: "https://olympus.itunes.apple.com/v1")!
     }
