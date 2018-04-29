@@ -1,4 +1,4 @@
-import Core
+import ShuttleCore
 import Foundation
 import MoyaSugar
 import Moya

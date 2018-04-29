@@ -1,7 +1,7 @@
-import Core
+import ShuttleCore
 import Moya
 
-final class TestFlightClient: Core.Client {
+final class TestFlightClient: ShuttleCore.Client {
 
     let clientProvider = MoyaProvider<TestFlightAPI>()
 

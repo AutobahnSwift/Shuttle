@@ -1,7 +1,7 @@
-@testable import Core
+@testable import ShuttleCore
 import XCTest
 
-class TestClient: Core.Client {
+class TestClient: ShuttleCore.Client {
 
 }
 

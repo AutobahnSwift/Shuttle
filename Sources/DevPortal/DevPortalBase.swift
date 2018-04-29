@@ -1,4 +1,4 @@
-import Core
+import ShuttleCore
 
 //public class DevPortalBase<Model: Base> {
 //    

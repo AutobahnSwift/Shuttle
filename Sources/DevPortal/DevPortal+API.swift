@@ -1,5 +1,5 @@
 import Foundation
-import Core
+import ShuttleCore
 import Moya
 import MoyaSugar
 

@@ -1,7 +1,7 @@
-import Core
+import ShuttleCore
 import Moya
 
-final class TunesClient: Core.Client {
+final class TunesClient: ShuttleCore.Client {
 
 //    let clientProvider = MoyaProvider<TunesAPI>()
 //    var teams = [Team]()

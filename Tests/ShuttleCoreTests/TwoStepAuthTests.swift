@@ -1,4 +1,4 @@
-@testable import Core
+@testable import ShuttleCore
 import XCTest
 
 class TwoStepAuthTests: XCTestCase {

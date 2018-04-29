@@ -1,4 +1,4 @@
-import Core
+import ShuttleCore
 
 public struct DevPortal: Base {
     public static var _client: DevPortalClient?

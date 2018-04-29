@@ -1,8 +1,8 @@
 import Foundation
-import Core
+import ShuttleCore
 import Moya
 
-public final class DevPortalClient: Core.Client {
+public final class DevPortalClient: ShuttleCore.Client {
     public override class var hostname: URL {
         return URL(string: "https://developer.apple.com/services-account/\(protocolVersion)/")!
     }
