@@ -33,7 +33,7 @@ This basically a port of fastlane's [spaceship](https://github.com/fastlane/fast
 
 ## Example
 
-To see an example of the currently available APIs available see [Sources/Development/main.swift](Sources/Development/main.swift)
+To see an example of the currently available APIs available see [Sources/Development/main.swift](Sources/ShuttleDevelopment/main.swift)
 
 ### ToDO List:
 
@@ -76,5 +76,5 @@ $ swift package --enable-prefetching generate-xcodeproj
 $ open Shuttle.xcodeproj
 ```
 
-If you want to be able to run the [Sources/Development/main.swift](Sources/Development/main.swift) file to test changes you just need to switch to use the `Development` scheme in Xcode and then edit the scheme settings and add two environment variables for `USERNAME` and `PASSWORD` (don't worry the Xcode project is in the gitignore so you won't accidently push up your credentials to the repo)
+If you want to be able to run the [Sources/ShuttleDevelopment/main.swift](Sources/ShuttleDevelopment/main.swift) file to test changes you just need to switch to use the `Development` scheme in Xcode and then edit the scheme settings and add two environment variables for `USERNAME` and `PASSWORD` (don't worry the Xcode project is in the gitignore so you won't accidently push up your credentials to the repo)
 
